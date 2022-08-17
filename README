@@ -1,0 +1,15 @@
+# Option
+
+This package offers an `Option` generic type based on the `Option` type from Rust. All functions and methods in this package are named based on the methods found on the Rust type ([docs here](https://doc.rust-lang.org/stable/std/option/)).
+
+## Functions vs Methods
+
+Most features of this package are implemented as methods on an `Option`. However, due to the lack of generic methods on generic types in Go, some of the methods from the Rust library had to be implemented as package functions. The affected functions are:
+
+- `Map`
+- `MapOr`
+- `MapOrElse`
+- `And`
+- `AndThen`
+- `Contains`
+- `Flatten`
