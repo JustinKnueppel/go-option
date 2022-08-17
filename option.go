@@ -224,12 +224,18 @@ func (o *Option[T]) GetOrInsertWith(f func() T) *T {
 	return &o.data
 }
 
+// Take takes the value out of the option,
+// leaving a `None` in its place.
 func (o *Option[T]) Take() Option[T] {
 	taken := o.Copy()
 	o.has_data = false
 	return taken
 }
 
+// Replace replaces the actual value in the
+// option by the value given in parameter,
+// returning the old value if present, leaving
+// a `Some` in its place without deinitializing either one.
 func (o *Option[T]) Replace(t T) Option[T] {
 	old := o.Copy()
 	o.data = t
@@ -237,6 +243,8 @@ func (o *Option[T]) Replace(t T) Option[T] {
 	return old
 }
 
+// Contains returns true if the option is
+// a `Some` value containing the given value.
 func Contains[T comparable](o Option[T], x T) bool {
 	if o.IsNone() {
 		return false
@@ -244,10 +252,12 @@ func Contains[T comparable](o Option[T], x T) bool {
 	return o.data == x
 }
 
+// Copy returns a value copy of the option
 func (o Option[T]) Copy() Option[T] {
 	return o
 }
 
+// Flatten converts from `Option[Option[T]]` to `Option[T]`
 func Flatten[T any](o Option[Option[T]]) Option[T] {
 	if o.IsNone() {
 		return None[T]()
