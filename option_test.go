@@ -311,8 +311,12 @@ func TestInspect(t *testing.T) {
 	for tname, tc := range tests {
 		t.Run(tname, func(t *testing.T) {
 			closureValue = initialClosureValue
-			tc.value.Inspect(tc.function)
+			copy := tc.value.Copy()
+			val := tc.value.Inspect(tc.function)
 			if closureValue != tc.closureResult {
+				t.Fail()
+			}
+			if val != copy {
 				t.Fail()
 			}
 		})

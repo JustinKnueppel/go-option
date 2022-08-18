@@ -94,11 +94,12 @@ func Map[T any, U any](o Option[T], f func(T) U) Option[U] {
 }
 
 // Inspect calls the provided closure with the contained value
-// if it exists.
-func (o Option[T]) Inspect(f func(T)) {
+// if it exists and returns the unchanged Option.
+func (o Option[T]) Inspect(f func(T)) Option[T] {
 	if o.IsSome() {
 		f(o.data)
 	}
+	return o
 }
 
 // MapOr returns the provided default result (if `None`),
