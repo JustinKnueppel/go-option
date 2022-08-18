@@ -88,7 +88,7 @@ func main() {
 
 ### Working with contained value
 
-For the most part, functionality should be injected into the `Option` rather than trying to pull the inner value out of it. This can be achieved via `Map`s, `AndThen`s, `Inspect`s, and many more utility functions. However, if eventually you need to try to get the value out of the `Option`, it will be less convenient than in the Rust counterpart of this package as Go does not have pattern matching. Instead we must use the `IsSome`, `IsNone`, and `UnWrap*` methods. Note that the `Unwrap` method has undefined behavior if called on a `None` type, and should always be guarded by an `IsSome` or `IsNone` check. If having an error returned is preferable, the `Expect` method can be used.
+For the most part, functionality should be injected into the `Option` rather than trying to pull the inner value out of it. This can be achieved via `Map`s, `AndThen`s, `Inspect`s, and many more utility functions. However, if eventually you need to try to get the value out of the `Option`, it will be less convenient than in the Rust counterpart of this package as Go does not have pattern matching. Instead we must use the `IsSome`, `IsNone`, and `UnWrap*` methods. Note that the `Unwrap` method panics if called on a `None` type, and should always be guarded by an `IsSome` or `IsNone` check. To specify the error message with which `Unwrap` panics, the `Expect` method can be used instead.
 
 ```go
 func getAnOption() option.Option[int] {}

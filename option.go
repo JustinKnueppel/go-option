@@ -1,13 +1,11 @@
 package option
 
-import "errors"
-
 type Option[T any] struct {
 	data     T
 	has_data bool
 }
 
-// Some returns an Option with some value of type T
+// Some returns an Option with some value of type T.
 func Some[T any](data T) Option[T] {
 	return Option[T]{
 		data:     data,
@@ -15,7 +13,7 @@ func Some[T any](data T) Option[T] {
 	}
 }
 
-// None returns an Option with no value
+// None returns an Option with no value.
 func None[T any]() Option[T] {
 	var t T
 	return Option[T]{
@@ -24,40 +22,42 @@ func None[T any]() Option[T] {
 	}
 }
 
-// IsSome returns `true` if the option is a `Some` value
+// IsSome returns `true` if the option is a `Some` value.
 func (o Option[T]) IsSome() bool {
 	return o.has_data
 }
 
 // IsSomeAnd returns `true` if the option is a `Some` value
-// and the value inside of it matches a predicate
+// and the value inside of it matches a predicate.
 func (o Option[T]) IsSomeAnd(f func(T) bool) bool {
 	return o.has_data && f(o.data)
 }
 
-// IsNone returns `true` if the option is a `None` value
+// IsNone returns `true` if the option is a `None` value.
 func (o Option[T]) IsNone() bool {
 	return !o.has_data
 }
 
-// Expect returns the contained `Some` value.
-// Returns an error with the given message if `None`
-func (o Option[T]) Expect(msg string) (T, error) {
+// Expect returns the contained `Some` value unsafely.
+// Panics with the given message if `None`.
+func (o Option[T]) Expect(msg string) T {
 	if o.IsNone() {
-		var t T
-		return t, errors.New(msg)
+		panic(msg)
 	}
-	return o.data, nil
+	return o.data
 }
 
 // Unwrap returns the contained `Some` value unsafely.
-// Behavior is not defined if called on a `None`
+// Panics if `None`.
 func (o Option[T]) Unwrap() T {
+	if o.IsNone() {
+		panic("No value in Option")
+	}
 	return o.data
 }
 
 // UnwrapOr returns the contained `Some` value or
-// a provided default
+// a provided default.
 func (o Option[T]) UnwrapOr(fallback T) T {
 	if o.IsNone() {
 		return fallback
@@ -66,7 +66,7 @@ func (o Option[T]) UnwrapOr(fallback T) T {
 }
 
 // UnwrapOrElse returns the contained `Some` value or
-// computes it from a closure
+// computes it from a closure.
 func (o Option[T]) UnwrapOrElse(fallbackFn func() T) T {
 	if o.IsNone() {
 		return fallbackFn()
@@ -75,7 +75,7 @@ func (o Option[T]) UnwrapOrElse(fallbackFn func() T) T {
 }
 
 // UnwrapOrDefault returns the contained `Some` value or
-// the zero value of type T
+// the zero value of type T.
 func (o Option[T]) UnwrapOrDefault() T {
 	if o.IsNone() {
 		var t T
@@ -85,7 +85,7 @@ func (o Option[T]) UnwrapOrDefault() T {
 }
 
 // Map maps an Option[T] to an Option[U] by applying a function
-// to the contained value if it exists
+// to the contained value if it exists.
 func Map[T any, U any](o Option[T], f func(T) U) Option[U] {
 	if o.IsNone() {
 		return None[U]()
@@ -244,12 +244,12 @@ func Contains[T comparable](o Option[T], x T) bool {
 	return o.data == x
 }
 
-// Copy returns a value copy of the option
+// Copy returns a value copy of the option.
 func (o Option[T]) Copy() Option[T] {
 	return o
 }
 
-// Flatten converts from `Option[Option[T]]` to `Option[T]`
+// Flatten converts from `Option[Option[T]]` to `Option[T]`.
 func Flatten[T any](o Option[Option[T]]) Option[T] {
 	if o.IsNone() {
 		return None[T]()
