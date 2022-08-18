@@ -106,14 +106,14 @@ func TestExpect(t *testing.T) {
 
 	for tname, tc := range tests {
 		t.Run(tname, func(t *testing.T) {
-			val, err := tc.value.Expect(tc.msg)
-			if (err != nil) != tc.expectedError {
-				t.Fail()
-			}
-			if tc.expectedError && tc.msg != err.Error() {
-				t.Fail()
-			}
-			if !tc.expectedError && val != tc.inner {
+			defer func() {
+				panicMsg := recover()
+				if tc.expectedError && panicMsg != tc.msg {
+					t.Fail()
+				}
+			}()
+			val := tc.value.Expect(tc.msg)
+			if val != tc.inner {
 				t.Fail()
 			}
 		})
@@ -121,17 +121,30 @@ func TestExpect(t *testing.T) {
 }
 func TestUnwrap(t *testing.T) {
 	tests := map[string]struct {
-		value option.Option[int]
-		inner int
+		value         option.Option[int]
+		inner         int
+		expectedError bool
 	}{
 		"some_value": {
-			value: option.Some(1),
-			inner: 1,
+			value:         option.Some(1),
+			inner:         1,
+			expectedError: false,
+		},
+		"no_value": {
+			value:         option.None[int](),
+			inner:         0,
+			expectedError: true,
 		},
 	}
 
 	for tname, tc := range tests {
 		t.Run(tname, func(t *testing.T) {
+			defer func() {
+				e := recover()
+				if !tc.expectedError && e != nil {
+					t.Fail()
+				}
+			}()
 			val := tc.value.Unwrap()
 			if val != tc.inner {
 				t.Fail()
