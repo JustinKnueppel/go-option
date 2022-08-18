@@ -121,29 +121,19 @@ func TestExpect(t *testing.T) {
 }
 func TestUnwrap(t *testing.T) {
 	tests := map[string]struct {
-		value         option.Option[int]
-		inner         int
-		expectedError bool
+		value option.Option[int]
+		inner int
 	}{
 		"some_value": {
-			value:         option.Some(1),
-			inner:         1,
-			expectedError: false,
-		},
-		"no_value": {
-			value:         option.None[int](),
-			inner:         0,
-			expectedError: true,
+			value: option.Some(1),
+			inner: 1,
 		},
 	}
 
 	for tname, tc := range tests {
 		t.Run(tname, func(t *testing.T) {
-			val, err := tc.value.Unwrap()
-			if (err != nil) != tc.expectedError {
-				t.Fail()
-			}
-			if !tc.expectedError && val != tc.inner {
+			val := tc.value.Unwrap()
+			if val != tc.inner {
 				t.Fail()
 			}
 		})

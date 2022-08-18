@@ -50,14 +50,10 @@ func (o Option[T]) Expect(msg string) (T, error) {
 	return o.data, nil
 }
 
-// Unwrap returns the contained `Some` value.
-// Returns an error if the option is `None`
-func (o Option[T]) Unwrap() (T, error) {
-	if o.IsNone() {
-		var t T
-		return t, errors.New("unwrap called on empty Option")
-	}
-	return o.data, nil
+// Unwrap returns the contained `Some` value unsafely.
+// Behavior is not defined if called on a `None`
+func (o Option[T]) Unwrap() T {
+	return o.data
 }
 
 // UnwrapOr returns the contained `Some` value or
