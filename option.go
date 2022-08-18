@@ -186,8 +186,7 @@ func (o Option[T]) Xor(optB Option[T]) Option[T] {
 // a mutable reference to it. If the option already contains
 // a value, the old value is dropped.
 func (o *Option[T]) Insert(value T) *T {
-	o.data = value
-	o.has_data = true
+	*o = Some(value)
 	return &o.data
 }
 
@@ -195,8 +194,7 @@ func (o *Option[T]) Insert(value T) *T {
 // then returns a mutable reference to the contained value.
 func (o *Option[T]) GetOrInsert(value T) *T {
 	if o.IsNone() {
-		o.data = value
-		o.has_data = true
+		*o = Some(value)
 	}
 	return &o.data
 }
@@ -207,8 +205,7 @@ func (o *Option[T]) GetOrInsert(value T) *T {
 func (o *Option[T]) GetOrInsertDefault() *T {
 	if o.IsNone() {
 		var t T
-		o.data = t
-		o.has_data = true
+		*o = Some(t)
 	}
 	return &o.data
 }
@@ -218,8 +215,7 @@ func (o *Option[T]) GetOrInsertDefault() *T {
 // reference to the contained value.
 func (o *Option[T]) GetOrInsertWith(f func() T) *T {
 	if o.IsNone() {
-		o.data = f()
-		o.has_data = true
+		*o = Some(f())
 	}
 	return &o.data
 }
@@ -228,7 +224,7 @@ func (o *Option[T]) GetOrInsertWith(f func() T) *T {
 // leaving a `None` in its place.
 func (o *Option[T]) Take() Option[T] {
 	taken := o.Copy()
-	o.has_data = false
+	*o = None[T]()
 	return taken
 }
 
@@ -238,8 +234,7 @@ func (o *Option[T]) Take() Option[T] {
 // a `Some` in its place without deinitializing either one.
 func (o *Option[T]) Replace(t T) Option[T] {
 	old := o.Copy()
-	o.data = t
-	o.has_data = true
+	*o = Some(t)
 	return old
 }
 
